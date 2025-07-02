@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Document - DigiHealth</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>DigiHealth</span>
+            </div>
+            <div class="hamburger" id="hamburger-menu" aria-label="Open navigation" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/upload" class="nav-link active">Upload</a>
+                <a href="/query" class="nav-link">Query</a>
+                <a href="/index" class="nav-link">Index</a>
+                <button id="auth-btn" class="auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="auth-text">Login</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="upload-section">
+                <div class="upload-header">
+                    <h1><i class="fas fa-cloud-upload-alt"></i> Upload Healthcare Document</h1>
+                    <p>Upload your medical documents, lab results, or healthcare images for AI-powered analysis and summarization.</p>
+                </div>
+
+                <div class="upload-container">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-file-upload upload-icon"></i>
+                            <h3>Drag & Drop your files here</h3>
+                            <p>or <span class="upload-link" id="browseFiles">browse files</span></p>
+                            <div class="supported-formats">
+                                <small>Supported formats: PDF, JPG, JPEG, PNG</small>
+                            </div>
+                        </div>
+                        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+                    </div>
+
+                    <div class="upload-progress" id="uploadProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">Uploading...</div>
+                    </div>
+
+                    <div class="upload-result" id="uploadResult" style="display: none;">
+                        <div class="result-header">
+                            <i class="fas fa-check-circle success-icon"></i>
+                            <h3>Document Processed Successfully!</h3>
+                        </div>
+                        <div class="result-details">
+                            <div class="result-item">
+                                <strong>File:</strong> <span id="resultFileName"></span>
+                            </div>
+                            <div class="result-item">
+                                <strong>Status:</strong> <span class="status-success">Processed & Saved</span>
+                            </div>
+                        </div>
+                        <div class="result-summary">
+                            <h4>AI Summary:</h4>
+                            <div class="summary-content" id="summaryContent"></div>
+                        </div>
+                        <div class="result-actions">
+                            <button class="btn btn-primary" onclick="resetUpload()">
+                                <i class="fas fa-plus"></i> Upload Another Document
+                            </button>
+                            <a href="/query" class="btn btn-secondary">
+                                <i class="fas fa-search"></i> Query Documents
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="upload-error" id="uploadError" style="display: none;">
+                        <div class="error-header">
+                            <i class="fas fa-exclamation-circle error-icon"></i>
+                            <h3>Upload Failed</h3>
+                        </div>
+                        <div class="error-message" id="errorMessage"></div>
+                        <button class="btn btn-primary" onclick="resetUpload()">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                </div>
+
+                <div class="upload-info">
+                    <h3>What happens after upload?</h3>
+                    <div class="info-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>AI Analysis</h4>
+                                <p>Your document is analyzed using Google's Gemini 2.0 Flash AI model</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Text Extraction</h4>
+                                <p>All relevant text and data is extracted from images and PDFs</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Smart Summary</h4>
+                                <p>A comprehensive summary is generated highlighting key information</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Secure Storage</h4>
+                                <p>Summary and metadata are securely stored in our database for future queries</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Login to DigiHealth</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <p class="form-switch">
+                        Don't have an account? <a href="#" id="switch-to-signup">Sign up</a>
+                    </p>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="auth-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                    <p class="form-switch">
+                        Already have an account? <a href="#" id="switch-to-login">Login</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-heartbeat"></i> DigiHealth</h3>
+                    <p>Revolutionizing healthcare document management with AI-powered solutions.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/upload">Upload</a></li>
+                        <li><a href="/query">Query</a></li>
+                        <li><a href="/index">Index</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p><i class="fab fa-linkedin"></i> <a href="https://www.linkedin.com/in/umesh-v-791405274/" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: none;">Connect on LinkedIn</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 DigiHealth. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiHealth - Document Indexing</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>DigiHealth</span>
+            </div>
+            <div class="hamburger" id="hamburger-menu" aria-label="Open navigation" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/upload" class="nav-link">Upload</a>
+                <a href="/query" class="nav-link">Query</a>
+                <a href="/index" class="nav-link active">Index</a>
+                <button id="auth-btn" class="auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="auth-text">Login</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="indexing-section">
+            <div class="container">
+                <h1>Document Indexing</h1>
+                
+                <div class="indexing-status">
+                    <div class="status-card">
+                        <div class="status-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="status-content">
+                            <h3>Last Indexed</h3>
+                            <p id="lastIndexedTime">{{ last_indexed_time }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="status-card">
+                        <div class="status-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="status-content">
+                            <h3>Total Documents</h3>
+                            <p id="totalDocuments">{{ total_documents }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="indexing-controls">
+                    <button id="startIndexing" class="btn btn-primary">
+                        <i class="fas fa-sync"></i> Create New Index
+                    </button>
+                    <button id="reinitializeRag" class="btn btn-secondary">
+                        <i class="fas fa-brain"></i> Reinitialize RAG System
+                    </button>
+                </div>
+
+                <div id="indexingProgress" class="progress-container" style="display: none;">
+                    <div class="progress-header">
+                        <h3>Indexing Progress</h3>
+                        <span id="progressStatus">Initializing...</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progressBar" class="progress" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-steps">
+                        <div class="step">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Loading Documents</span>
+                        </div>
+                        <div class="step">
+                            <i class="fas fa-brain"></i>
+                            <span>Creating Embeddings</span>
+                        </div>
+                        <div class="step">
+                            <i class="fas fa-database"></i>
+                            <span>Building Index</span>
+                        </div>
+                        <div class="step">
+                            <i class="fas fa-cogs"></i>
+                            <span>Reinitializing RAG</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ragStatus" class="status-message" style="display: none;">
+                    <div class="status-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="status-content">
+                        <h4>RAG System Status</h4>
+                        <p id="ragStatusText">RAG system is ready for queries</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Login to DigiHealth</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <p class="form-switch">
+                        Don't have an account? <a href="#" id="switch-to-signup">Sign up</a>
+                    </p>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="auth-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                    <p class="form-switch">
+                        Already have an account? <a href="#" id="switch-to-login">Login</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-heartbeat"></i> DigiHealth</h3>
+                    <p>Revolutionizing healthcare document management with AI-powered solutions.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/upload">Upload</a></li>
+                        <li><a href="/query">Query</a></li>
+                        <li><a href="/index">Index</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p><i class="fab fa-linkedin"></i> <a href="https://www.linkedin.com/in/umesh-v-791405274/" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: none;">Connect on LinkedIn</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 DigiHealth. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/auth.js"></script>
+    <script>
+        document.getElementById('startIndexing').addEventListener('click', async function() {
+            // Check authentication
+            if (!window.authManager || !window.authManager.isAuthenticated) {
+                window.authManager.showModal();
+                return;
+            }
+            
+            const progressContainer = document.getElementById('indexingProgress');
+            const progressBar = document.getElementById('progressBar');
+            const progressStatus = document.getElementById('progressStatus');
+            const startButton = document.getElementById('startIndexing');
+            const ragStatus = document.getElementById('ragStatus');
+            const ragStatusText = document.getElementById('ragStatusText');
+            
+            startButton.disabled = true;
+            progressContainer.style.display = 'block';
+            ragStatus.style.display = 'none';
+            
+            try {
+                const headers = {
+                    'Authorization': `Bearer ${window.authManager.token}`
+                };
+                
+                // Simulate progress for better UX
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 20;
+                    if (progress > 80) {
+                        progress = 80;
+                        clearInterval(progressInterval);
+                    }
+                    progressBar.style.width = progress + '%';
+                    if (progress < 30) {
+                        progressStatus.textContent = 'Loading documents...';
+                    } else if (progress < 60) {
+                        progressStatus.textContent = 'Creating embeddings...';
+                    } else {
+                        progressStatus.textContent = 'Building index...';
+                    }
+                }, 500);
+                
+                const response = await fetch('/start-indexing', {
+                    method: 'POST',
+                    headers: headers
+                });
+                
+                clearInterval(progressInterval);
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Authentication error
+                        window.authManager.clearAuthData();
+                        window.authManager.updateUI();
+                        throw new Error('Session expired. Please login again.');
+                    }
+                    throw new Error('Indexing failed');
+                }
+                
+                const data = await response.json();
+                
+                // Update progress to show RAG reinitialization
+                progressBar.style.width = '90%';
+                progressStatus.textContent = 'Reinitializing RAG system...';
+                
+                // Wait a moment to show the RAG step
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Complete the progress
+                progressBar.style.width = '100%';
+                progressStatus.textContent = 'Indexing completed successfully!';
+                
+                // Update last indexed time and total documents
+                document.getElementById('lastIndexedTime').textContent = data.last_indexed_time;
+                document.getElementById('totalDocuments').textContent = data.total_documents;
+                
+                // Show RAG status
+                if (data.rag_reinitialized) {
+                    ragStatus.style.display = 'flex';
+                    ragStatusText.textContent = 'RAG system reinitialized successfully with new index';
+                    ragStatus.querySelector('.status-icon i').className = 'fas fa-check-circle';
+                    ragStatus.querySelector('.status-icon').style.color = '#28a745';
+                }
+                
+            } catch (error) {
+                progressStatus.textContent = 'Error: ' + error.message;
+                progressBar.style.backgroundColor = '#ff4444';
+            } finally {
+                startButton.disabled = false;
+            }
+        });
+
+        document.getElementById('reinitializeRag').addEventListener('click', async function() {
+            // Check authentication
+            if (!window.authManager || !window.authManager.isAuthenticated) {
+                window.authManager.showModal();
+                return;
+            }
+            
+            const reinitializeButton = document.getElementById('reinitializeRag');
+            const ragStatus = document.getElementById('ragStatus');
+            const ragStatusText = document.getElementById('ragStatusText');
+            
+            reinitializeButton.disabled = true;
+            reinitializeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reinitializing...';
+            
+            try {
+                const headers = {
+                    'Authorization': `Bearer ${window.authManager.token}`
+                };
+                
+                const response = await fetch('/reinitialize-rag', {
+                    method: 'POST',
+                    headers: headers
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Authentication error
+                        window.authManager.clearAuthData();
+                        window.authManager.updateUI();
+                        throw new Error('Session expired. Please login again.');
+                    }
+                    throw new Error('RAG reinitialization failed');
+                }
+                
+                const data = await response.json();
+                
+                // Show success status
+                ragStatus.style.display = 'flex';
+                ragStatusText.textContent = data.message;
+                ragStatus.querySelector('.status-icon i').className = 'fas fa-check-circle';
+                ragStatus.querySelector('.status-icon').style.color = '#28a745';
+                
+            } catch (error) {
+                // Show error status
+                ragStatus.style.display = 'flex';
+                ragStatusText.textContent = 'Error: ' + error.message;
+                ragStatus.querySelector('.status-icon i').className = 'fas fa-exclamation-circle';
+                ragStatus.querySelector('.status-icon').style.color = '#dc3545';
+            } finally {
+                reinitializeButton.disabled = false;
+                reinitializeButton.innerHTML = '<i class="fas fa-brain"></i> Reinitialize RAG System';
+            }
+        });
+    </script>
+</body>
+</html>

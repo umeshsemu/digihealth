@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiHealth - AI-Powered Healthcare Document Processing</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>DigiHealth</span>
+            </div>
+            <div class="hamburger" id="hamburger-menu" aria-label="Open navigation" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-menu">
+                <a href="/" class="nav-link active">Home</a>
+                <a href="/upload" class="nav-link protected-link" data-requires-auth="true">Upload</a>
+                <a href="/query" class="nav-link protected-link" data-requires-auth="true">Query</a>
+                <a href="/index" class="nav-link protected-link" data-requires-auth="true">Index</a>
+                <button id="auth-btn" class="auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="auth-text">Login</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>AI-Powered Healthcare Document Processing</h1>
+                <p>Transform your medical documents into actionable insights with advanced AI technology</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary protected-action" data-requires-auth="true" data-action="upload">
+                        <i class="fas fa-upload"></i> Upload Document
+                    </button>
+                    <button class="btn btn-secondary protected-action" data-requires-auth="true" data-action="query">
+                        <i class="fas fa-search"></i> Query Database
+                    </button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <i class="fas fa-file-medical-alt"></i>
+            </div>
+        </section>
+
+        <section class="our-services">
+            <div class="container">
+                <h2>How to use?</h2>
+                <p class="services-intro">Follow these simple steps to transform your healthcare documents into intelligent, searchable knowledge</p>
+                
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-header">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <h3>Upload Your Documents</h3>
+                            </div>
+                            <div class="step-details">
+                                <p>Upload medical reports, lab results, prescriptions, and healthcare PDF documents.</p>
+                                <div class="step-action">
+                                    <button class="btn btn-outline protected-action" data-requires-auth="true" data-action="upload">
+                                        <i class="fas fa-upload"></i> Start Uploading
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-header">
+                                <i class="fas fa-cogs"></i>
+                                <h3>Create Search Index</h3>
+                            </div>
+                            <div class="step-details">
+                                <p>AI extracts text, identifies medical entities, and creates intelligent embeddings for semantic search.</p>
+                                <div class="step-action">
+                                    <button class="btn btn-outline protected-action" data-requires-auth="true" data-action="index">
+                                        <i class="fas fa-cogs"></i> Create Index
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-header">
+                                <i class="fas fa-search"></i>
+                                <h3>Ask Questions & Get Answers</h3>
+                            </div>
+                            <div class="step-details">
+                                <p>Use text input or voice recognition for natural language questions about your medical data.</p>
+                                <div class="step-action">
+                                    <button class="btn btn-outline protected-action" data-requires-auth="true" data-action="query">
+                                        <i class="fas fa-search"></i> Start Querying
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-benefits">
+                    <h3>Why Choose DigiHealth?</h3>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <h4>Secure & Private</h4>
+                            <p>Your medical data is encrypted and stored securely with enterprise-grade security measures.</p>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-brain"></i>
+                            <h4>AI-Powered</h4>
+                            <p>Advanced AI understands medical terminology and provides contextually relevant answers.</p>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-globe"></i>
+                            <h4>Multi-Language Support</h4>
+                            <p>Voice queries support multiple Indian languages and regional accents for better accessibility.</p>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-bolt"></i>
+                            <h4>Instant Results</h4>
+                            <p>Get answers to your medical queries in seconds with our optimized search technology.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="health-suggestions">
+            <div class="container">
+                <h2>Health & Wellness Suggestions</h2>
+                <div class="suggestions-container">
+                    <div class="suggestion-item">
+                        <div class="suggestion-number">1</div>
+                        <div class="suggestion-content">
+                            <h3>Maintain a Balanced Diet</h3>
+                            <p>Focus on whole foods, fruits, vegetables, lean proteins, and whole grains. Limit processed foods, excessive sugar, and unhealthy fats to support overall health.</p>
+                        </div>
+                    </div>
+                    <div class="suggestion-item">
+                        <div class="suggestion-number">2</div>
+                        <div class="suggestion-content">
+                            <h3>Stay Physically Active</h3>
+                            <p>Aim for at least 150 minutes of moderate-intensity exercise per week. Include both cardiovascular activities and strength training exercises.</p>
+                        </div>
+                    </div>
+                    <div class="suggestion-item">
+                        <div class="suggestion-number">3</div>
+                        <div class="suggestion-content">
+                            <h3>Prioritize Mental Health</h3>
+                            <p>Practice stress management techniques, maintain social connections, and seek professional help when needed. Mental health is as important as physical health.</p>
+                        </div>
+                    </div>
+                    <div class="suggestion-item">
+                        <div class="suggestion-number">4</div>
+                        <div class="suggestion-content">
+                            <h3>Get Quality Sleep</h3>
+                            <p>Aim for 7-9 hours of quality sleep per night. Establish a consistent sleep schedule and create a relaxing bedtime routine.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Login to DigiHealth</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <p class="form-switch">
+                        Don't have an account? <a href="#" id="switch-to-signup">Sign up</a>
+                    </p>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="auth-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                    <p class="form-switch">
+                        Already have an account? <a href="#" id="switch-to-login">Login</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-heartbeat"></i> DigiHealth</h3>
+                    <p>Revolutionizing healthcare document management with AI-powered solutions.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/upload" class="protected-link" data-requires-auth="true">Upload</a></li>
+                        <li><a href="/query" class="protected-link" data-requires-auth="true">Query</a></li>
+                        <li><a href="/index" class="protected-link" data-requires-auth="true">Index</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p><i class="fab fa-linkedin"></i> <a href="https://www.linkedin.com/in/umesh-v-791405274/" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: none;">Connect on LinkedIn</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 DigiHealth. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiHealth - Document Query</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>DigiHealth</span>
+            </div>
+            <div class="hamburger" id="hamburger-menu" aria-label="Open navigation" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/upload" class="nav-link">Upload</a>
+                <a href="/query" class="nav-link active">Query</a>
+                <a href="/index" class="nav-link">Index</a>
+                <button id="auth-btn" class="auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="auth-text">Login</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="query-section">
+            <div class="container">
+                <h1>Ask Questions About Your Documents</h1>
+                
+                <div class="query-form">
+                    <form id="queryForm" class="query-input-container">
+                        <div class="input-group">
+                            <div class="input-with-mic">
+                            <textarea 
+                                id="queryInput" 
+                                placeholder="Ask any question about your documents..."
+                                required
+                                rows="3"
+                            ></textarea>
+                                <button type="button" id="micButton" class="mic-button" title="Click to record your question">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                            <div class="recording-status" id="recordingStatus" style="display: none;">
+                                <div class="recording-indicator">
+                                    <div class="pulse-dot"></div>
+                                    <span>Recording... Click to stop</span>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-large">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Processing your query...</p>
+                </div>
+
+                <div id="resultContainer" class="result-container" style="display: none;">
+                    <div class="answer-card">
+                        <h3>Answer</h3>
+                        <div id="answer" class="answer-content"></div>
+                        <div class="processing-info">
+                            <span id="processingTime"></span>
+                        </div>
+                    </div>
+
+                    <div class="sources-card">
+                        <h3>Sources</h3>
+                        <div id="sources" class="sources-list"></div>
+                    </div>
+                </div>
+
+                <div id="errorContainer" class="error-container" style="display: none;">
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="errorMessage"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Login to DigiHealth</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <p class="form-switch">
+                        Don't have an account? <a href="#" id="switch-to-signup">Sign up</a>
+                    </p>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="auth-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                    <p class="form-switch">
+                        Already have an account? <a href="#" id="switch-to-login">Login</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Viewer Modal -->
+    <div id="document-modal" class="modal">
+        <div class="modal-content document-modal-content">
+            <div class="modal-header">
+                <h2 id="document-title">Document Viewer</h2>
+                <div class="document-modal-actions">
+                    <div class="document-controls">
+                        <button id="prev-page" class="control-btn" style="display: none;" title="Previous page">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span id="page-info" style="display: none;">Page <span id="current-page">1</span> of <span id="total-pages">1</span></span>
+                        <button id="next-page" class="control-btn" style="display: none;" title="Next page">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="zoom-controls">
+                        <button id="zoom-out" class="control-btn" style="display: none;" title="Zoom out">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <span id="zoom-level" style="display: none;">100%</span>
+                        <button id="zoom-in" class="control-btn" style="display: none;" title="Zoom in">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button id="fit-page" class="control-btn" style="display: none;" title="Fit to page">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </button>
+                    </div>
+                    <button id="download-from-modal" class="btn btn-secondary btn-small" style="display: none;">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <span class="close" onclick="closeDocumentModal()">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body document-modal-body">
+                <div id="document-viewer" class="document-viewer">
+                    <div class="loading-document">
+                        <div class="spinner"></div>
+                        <p>Loading document...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-heartbeat"></i> DigiHealth</h3>
+                    <p>Revolutionizing healthcare document management with AI-powered solutions.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/upload">Upload</a></li>
+                        <li><a href="/query">Query</a></li>
+                        <li><a href="/index">Index</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p><i class="fab fa-linkedin"></i> <a href="https://www.linkedin.com/in/umesh-v-791405274/" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: none;">Connect on LinkedIn</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 DigiHealth. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Include recorder.js for client-side audio recording -->
+    <script src="/static/js/recorder.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/script.js"></script>
+    
+    <script>
+        // Wrapper to handle deprecation warnings gracefully
+        function createRecorderWrapper(source, config) {
+            try {
+                const recorder = new Recorder(source, config);
+                return recorder;
+            } catch (error) {
+                throw error;
+            }
+        }
+    
+        // Client-side Speech-to-Text functionality using recorder.js
+        class SpeechToText {
+            constructor() {
+                this.micButton = document.getElementById('micButton');
+                this.queryInput = document.getElementById('queryInput');
+                this.recordingStatus = document.getElementById('recordingStatus');
+                this.isRecording = false;
+                this.recordingTimer = null;
+                this.maxDuration = 12; // Maximum 12 seconds
+                this.recorder = null;
+                this.audioContext = null;
+                this.stream = null;
+                
+                this.init();
+            }
+            
+            init() {
+                this.micButton.addEventListener('click', () => this.toggleRecording());
+            }
+            
+            async toggleRecording() {
+                if (this.isRecording) {
+                    await this.stopRecording();
+                } else {
+                    await this.startRecording();
+                }
+            }
+            
+            async startRecording() {
+                try {
+                    // Check authentication first
+                    if (!window.authManager || !window.authManager.isAuthenticated) {
+                        window.authManager.showModal();
+                        return;
+                    }
+                    
+                    // Request microphone access
+                    this.stream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            sampleRate: 16000,
+                            channelCount: 1,
+                            echoCancellation: true,
+                            noiseSuppression: true
+                        } 
+                    });
+                    
+                    // Create audio context
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const source = this.audioContext.createMediaStreamSource(this.stream);
+                    
+                    // Create recorder with WAV format using wrapper
+                    this.recorder = createRecorderWrapper(source, {
+                        numChannels: 1,
+                        mimeType: 'audio/wav'
+                    });
+                    
+                    // Start recording
+                    this.recorder.record();
+                    this.isRecording = true;
+                    
+                    // Update UI to show recording state
+                    this.micButton.innerHTML = '<i class="fas fa-stop"></i>';
+                    this.micButton.classList.add('recording');
+                    this.recordingStatus.style.display = 'block';
+                    this.recordingStatus.textContent = 'Recording... Click to stop';
+                    
+                    // Start timer for maximum duration
+                    this.startTimer();
+                    
+                } catch (error) {
+                    this.showMessage('Error accessing microphone. Please check permissions.', 'error');
+                    this.resetUI();
+                }
+            }
+            
+            async stopRecording() {
+                try {
+                    if (!this.recorder || !this.isRecording) {
+                        return;
+                    }
+                    
+                    // Update UI to show processing state
+                    this.recordingStatus.textContent = 'Processing...';
+                    this.micButton.disabled = true;
+                    
+                    // Stop the timer
+                    if (this.recordingTimer) {
+                        clearInterval(this.recordingTimer);
+                        this.recordingTimer = null;
+                    }
+                    
+                    // Stop recording and get WAV blob
+                    this.recorder.stop();
+                    
+                    // Export as WAV with proper MIME type
+                    this.recorder.exportWAV(async (blob) => {
+                        try {
+                            // Ensure proper WAV MIME type and validate blob
+                            if (!blob || blob.size === 0) {
+                                throw new Error('No audio data recorded');
+                            }
+                            
+                            const wavBlob = new Blob([blob], { type: 'audio/wav' });
+                            
+                            // Convert blob to base64
+                            const base64Audio = await this.blobToBase64(wavBlob);
+                            
+                            // Send to server for transcription
+                            await this.sendAudioForTranscription(base64Audio);
+                            
+                        } catch (error) {
+                            this.showMessage('Error processing audio. Please try again.', 'error');
+                            this.resetUI();
+                        }
+                    }, 'audio/wav');
+                    
+                } catch (error) {
+                    this.showMessage('Error stopping recording. Please try again.', 'error');
+                    this.resetUI();
+                }
+            }
+            
+            async blobToBase64(blob) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        // Remove data:audio/wav;base64, prefix
+                        const base64 = reader.result.split(',')[1];
+                        resolve(base64);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            }
+            
+            async sendAudioForTranscription(base64Audio) {
+                try {
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${window.authManager.token}`
+                    };
+                    
+                    const response = await fetch('/speech-to-text', {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify({
+                            audio_data: base64Audio
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            window.authManager.clearAuthData();
+                            window.authManager.updateUI();
+                            throw new Error('Session expired. Please login again.');
+                        } else {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.detail || 'Transcription failed. Please try again.');
+                        }
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Check if transcription was successful
+                    if (data.status === 'success' && data.transcription) {
+                        // Update textarea with transcription
+                        this.queryInput.value = data.transcription;
+                        
+                        // Show success message
+                        this.showMessage('Recording completed! Transcription ready.', 'success');
+                    } else {
+                        throw new Error('No transcription received. Please try again.');
+                    }
+                    
+                } catch (error) {
+                    this.showMessage(error.message || 'Error processing transcription. Please try again.', 'error');
+                } finally {
+                    this.resetUI();
+                }
+            }
+            
+            startTimer() {
+                let elapsed = 0;
+                this.recordingTimer = setInterval(() => {
+                    elapsed++;
+                    const remaining = this.maxDuration - elapsed;
+                    
+                    if (remaining <= 0) {
+                        // Auto-stop after maximum duration
+                        this.recordingStatus.textContent = 'Maximum time reached, stopping...';
+                        this.stopRecording();
+                    } else {
+                        // Update status with countdown
+                        this.recordingStatus.textContent = `Recording... Click to stop (${remaining}s left)`;
+                    }
+                }, 1000);
+            }
+            
+            resetUI() {
+                this.isRecording = false;
+                this.micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+                this.micButton.classList.remove('recording');
+                this.micButton.disabled = false;
+                this.recordingStatus.style.display = 'none';
+                
+                if (this.recordingTimer) {
+                    clearInterval(this.recordingTimer);
+                    this.recordingTimer = null;
+                }
+                
+                // Clean up audio resources
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => track.stop());
+                    this.stream = null;
+                }
+                
+                if (this.audioContext) {
+                    this.audioContext.close();
+                    this.audioContext = null;
+                }
+                
+                this.recorder = null;
+            }
+            
+            showMessage(message, type = 'error') {
+                // Create a temporary message element
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `recording-message ${type}`;
+                messageDiv.textContent = message;
+                messageDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    color: white;
+                    font-weight: bold;
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease-out;
+                `;
+                
+                if (type === 'success') {
+                    messageDiv.style.backgroundColor = '#4CAF50';
+                } else {
+                    messageDiv.style.backgroundColor = '#f44336';
+                }
+                
+                document.body.appendChild(messageDiv);
+                
+                // Remove message after 3 seconds
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.parentNode.removeChild(messageDiv);
+                    }
+                }, 3000);
+            }
+        }
+        
+        // Initialize speech-to-text when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new SpeechToText();
+        });
+    </script>
+</body>
+</html>
